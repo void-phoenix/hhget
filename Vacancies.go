@@ -4,6 +4,11 @@ import (
 	"net/http"
 	"fmt"
 	"io/ioutil"
+	"strconv"
+)
+
+const(
+	vacanciesBasePath = "https://api.hh.ru/vacancies?search_field=name&search_field=description&specialization=1&period=1"
 )
 
 type VacanciesResult struct {
@@ -31,5 +36,25 @@ func GetVacanciesResult(path string) (x *VacanciesResult, err error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+func GetAllItemsFor(path string) []*Vacancy {
+	path = vacanciesBasePath+"&text=" + path
+	var vacancies []*Vacancy
+	count := 0
+	for {
+		vacanciesResult, err := GetVacanciesResult(path + "&page=" + strconv.Itoa(count))
+		if err != nil {
+			fmt.Println("Error getting response... ", err.Error())
+			break
+		}
+		vacancies = append(vacancies, ParseVacanciesResult(vacanciesResult)...)
+
+		if vacanciesResult.Page == vacanciesResult.Pages || vacanciesResult.Pages == count {
+			break
+		}
+		count++
+	}
+	return vacancies
 }
 
