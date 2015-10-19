@@ -3,7 +3,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"fmt"
-	"io/ioutil"
 	"strconv"
 )
 
@@ -31,8 +30,7 @@ func GetVacanciesResult(path string) (x *VacanciesResult, err error) {
 
 	err = json.NewDecoder(rawResult.Body).Decode(result)
 	if err != nil {
-		fmt.Println("Error parsing body:")
-		fmt.Println(ioutil.ReadAll(rawResult.Body))
+		fmt.Println("Error parsing body...")
 		return nil, err
 	}
 	return result, nil
